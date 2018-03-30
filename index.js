@@ -51,14 +51,30 @@ function listTasks() {
 }
 
 async function startTask(taskId) {
-  let lut = Math.floor(new Date().getTime() / 1000);
-
   var runningTask = await db.getAsync(`SELECT * from tasks WHERE running=1`);
+  if (taskId && runningTask && taskId == runningTask.id) {
+    return;
+  }
+  stopRunningTask(runningTask);
+
+  let lut = nowInSecs();
+  db.runAsync(`UPDATE tasks SET running=1, lut=${lut} WHERE id=${taskId}`);
+}
+
+async function stopRunningTask(runningTask) {
+  if (!runningTask) {
+    runningTask = await db.getAsync(`SELECT * from tasks WHERE running=1`);
+  }
+
   if (runningTask) {
+    let lut = nowInSecs();
     let duration = runningTask.duration + (lut - runningTask.lut);
     db.runAsync(`UPDATE tasks SET running=0, duration=${duration}, lut=${lut} WHERE id=${runningTask.id}`);
   }
-  db.runAsync(`UPDATE tasks SET running=1, lut=${lut} WHERE id=${taskId}`);
+}
+
+function nowInSecs() {
+  return Math.floor(new Date().getTime() / 1000);
 }
 
 // --------------------------
@@ -71,13 +87,15 @@ async function main() {
     .option('-c, --clear', 'Clear all tasks')
     .option('-a, --add <task>', `Add task <'id#name#type'>`)
     .option('-l, --list', 'list tasks')
-    .option('-s, --start <taskId>', 'Stat task with <taskId>')
+    .option('-s, --start <taskId>', 'Start task with <taskId>')
+    .option('-x, --stop', 'Stop running task')
     .parse(process.argv);
 
   if (program.clear) await clearTasks();
   if (program.add) await addTask(program.add);
   if (program.list) listTasks();
   if (program.start) await startTask(program.start);
+  if (program.stop) await stopRunningTask();
 
 
   db.close();
