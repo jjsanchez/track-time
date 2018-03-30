@@ -1,0 +1,18 @@
+{
+  "name": "tt",
+  "version": "1.0.0",
+  "description": "time tracker",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "bin": {
+    "tt": "./index.js"
+  },
+  "author": "jjsg@",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "commander": "^2.15.1",
+    "sqlite3": "^4.0.0"
+  }
+}
