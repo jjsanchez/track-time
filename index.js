@@ -42,12 +42,42 @@ async function addTask(task) {
 }
 
 function listTasks() {
+  forEachTask((row) => {
+    console.log("Id: %s, Type: %s, Name: %s, Lut: %s, Duration: %s, Running: %s", row.id, row.type, row.name, row.lut, row.duration, row.running);
+  });
+}
+
+function exportTasks() {
+  var today = todayAsString();
+  forEachTask((row) => {
+    console.log("%s#%s#%s#%s#%s", today,row.id, row.type, row.name, row.duration);
+  });
+}
+
+function forEachTask(rowCallback) {
   db.each("SELECT * from tasks", (err, row) => {
     if (err) {
       return console.log(err.message);
     }
-    console.log("Id: %s, Type: %s, Name: %s, Lut: %s, Duration: %s, Running: %s", row.id, row.type, row.name, row.lut, row.duration, row.running);
+    rowCallback(row);
   });
+}
+
+function todayAsString() {
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth() + 1; //January is 0!
+  var yyyy = today.getFullYear();
+
+  if (dd<10) {
+    dd = '0'+dd
+  }
+
+  if (mm<10) {
+    mm = '0'+mm
+  }
+
+  return mm + '/' + dd + '/' + yyyy;
 }
 
 async function startTask(taskId) {
@@ -89,6 +119,7 @@ async function main() {
     .option('-l, --list', 'list tasks')
     .option('-s, --start <taskId>', 'Start task with <taskId>')
     .option('-x, --stop', 'Stop running task')
+    .option('-e, --export', 'Export tasks')
     .parse(process.argv);
 
   if (program.clear) await clearTasks();
@@ -96,7 +127,7 @@ async function main() {
   if (program.list) listTasks();
   if (program.start) await startTask(program.start);
   if (program.stop) await stopRunningTask();
-
+  if (program.export) exportTasks();
 
   db.close();
 }
