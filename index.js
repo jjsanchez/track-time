@@ -29,7 +29,7 @@ db.runAsync = (sql) => {
 };
 
 async function bootstrapDb() {
-    db.runAsync(`CREATE TABLE IF NOT EXISTS tasks(id TEXT, name TEXT, type TEXT, running INTEGER, lut INTEGER, duration INTEGER);`);
+    db.runAsync(`CREATE TABLE IF NOT EXISTS tasks(id TEXT, name TEXT, type TEXT, running INTEGER, lut INTEGER, duration INTEGER, day TEXT);`);
 };
 
 async function clearTasks() {
@@ -37,8 +37,9 @@ async function clearTasks() {
 }
 
 async function addTask(task) {
+  var today = todayAsString();
   var parts = task.split("#");
-  db.runAsync(`INSERT INTO tasks VALUES(${parts[0]}, '${parts[1]}', '${parts[2]}', 0, 0, 0);`);
+  db.runAsync(`INSERT INTO tasks VALUES(${parts[0]}, '${parts[1]}', '${parts[2]}', 0, 0, 0, '${today}');`);
 }
 
 function listTasks() {
@@ -48,9 +49,8 @@ function listTasks() {
 }
 
 function exportTasks() {
-  var today = todayAsString();
   forEachTask((row) => {
-    console.log("%s#%s#%s#%s#%s", today,row.id, row.type, row.name, row.duration);
+    console.log("%s#%s#%s#%s#%s", row.day, row.id, row.type, row.name, row.duration);
   });
 }
 
@@ -77,7 +77,7 @@ function todayAsString() {
     mm = '0'+mm
   }
 
-  return mm + '/' + dd + '/' + yyyy;
+  return dd + '/' + mm + '/' + yyyy;
 }
 
 async function startTask(taskId) {
