@@ -13,6 +13,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "commander": "^2.15.1",
+    "seconds-to-human": "0.0.1",
     "sqlite3": "^4.0.0"
   }
 }

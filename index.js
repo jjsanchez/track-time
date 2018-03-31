@@ -3,6 +3,7 @@
 'use strict';
 
 let program = require('commander');
+let to_human = require('seconds-to-human');
 let sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database('/tmp/tasks');
 
@@ -44,7 +45,8 @@ async function addTask(task) {
 
 function listTasks() {
   forEachTask((row) => {
-    console.log("Id: %s, Type: %s, Name: %s, Lut: %s, Duration: %s, Running: %s", row.id, row.type, row.name, row.lut, row.duration, row.running);
+    row.duration = to_human(row.duration);
+    console.log(`${JSON.stringify(row)}`);
   });
 }
 
