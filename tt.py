@@ -16,7 +16,7 @@ def add_task(option, opt, value, parser):
 def list_tasks(option, opt, value, parser):
     update_running_time()
     for row in cursor.execute("SELECT * from tasks"):
-        print json.dumps((row[0], row[1], row[2], str(datetime.timedelta(seconds=row[5]))))
+        print json.dumps((row[0], row[1], row[2], row[3], str(datetime.timedelta(seconds=row[5]))))
 
 def start_task(option, opt, value, parser):
     stop_tasks()
