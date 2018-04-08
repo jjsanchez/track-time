@@ -49,10 +49,12 @@ def list_tasks():
     return [ { 'id': row[0], 'name': row[1], 'type': row[2], 'running': row[3], 'date': str(datetime.timedelta(seconds=row[5])) } for row in cursor.execute("SELECT * from tasks")]
 
 def to_alfred_item(task):
+    subtitle = task["date"] if task["running"] == 0 else "Running - %s" % (task["date"])
+
     return {
         "uuid": task["id"],
         "title": "%s - %s" % (task["type"], task["name"]),
-        "subtitle": task["date"],
+        "subtitle": subtitle,
         "arg": task["id"],
     }
 
